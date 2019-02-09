@@ -112,7 +112,7 @@ void gpio_set_off(unsigned pin) {
 }
 
 // countdown 'ticks' cycles; the asm probably isn't necessary.
-void delay(unsigned ticks) {
+static void delay(unsigned ticks) {
 	while(ticks-- > 0)
 		asm("add r1, r1, #0");
 }
@@ -123,9 +123,9 @@ int notmain ( void ) {
   	gpio_set_output(led);
         while(1) {
                 gpio_set_on(led);
-                delay(1000000);
+                delay(2000000);
                 gpio_set_off(led);
-                delay(1000000);
+                delay(2000000);
         }
 	return 0;
 }

@@ -57,6 +57,61 @@ void expect(const char *msg, int fd, unsigned v) {
 
 // unix-side bootloader: send the bytes, using the protocol.
 // read/write using put_uint() get_unint().
+
+void delay50(){
+	unsigned volatile delay=0;
+	for(int i=0; i < 8000000; i++){
+		delay++;
+	}
+}
+
 void simple_boot(int fd, const unsigned char * buf, unsigned n) { 
-	unimplemented();
+	//unimplemented();
+	
+	printf("Fsize Simple Boot: %d\n", n);
+	put_uint(fd,SOH);
+	put_uint(fd,n);
+	
+	printf("SOH\n");
+
+	unsigned crc32_tx = crc32(buf, n/4);
+	put_uint(fd,crc32_tx);
+	printf("CRC32 TX : %u \n", crc32_tx);	
+
+	if( (get_uint(fd)==SOH) && (get_uint(fd)==n) && (get_uint(fd)==crc32_tx))
+		printf("Received Checksum is Valid!\n");
+	else{
+		printf("Received Checksum is InValid!\n");
+		close(fd);
+		exit(-1);
+	}
+
+	unsigned *ubuf = (unsigned *)&buf[0];
+	for(int i=0; i < n/4; i++){
+		put_uint(fd, ubuf[i]);
+		delay50();
+	}
+	
+	printf("File TX Done\n");	
+	put_uint(fd, EOT);
+	delay50();
+	if(get_uint(fd)==EOT){
+		printf("EOT RX from BootLoader\n");
+	}
+	else{
+		printf("EOT RX Not Received\n");
+		close(fd);
+		exit(-1);	
+	}
+
+	if(get_uint(fd)==ACK){
+		printf("ACK from BootLoader\n");
+	}
+	else{
+		printf("NAK Received\n");
+		close(fd);
+		exit(-1);	
+	}
+	usleep(1000000);
+
 }

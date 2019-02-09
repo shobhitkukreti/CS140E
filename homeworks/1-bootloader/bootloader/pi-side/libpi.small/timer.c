@@ -6,7 +6,7 @@ void delay(unsigned ticks) {
 }
 
 unsigned timer_get_time(void) {
-	return *(volatile unsigned *)0x20003004;
+	return *(volatile unsigned *)0x3F003004; //changed for BCM2837
 }
 
 void delay_us(unsigned us) {
