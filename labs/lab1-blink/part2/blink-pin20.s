@@ -2,7 +2,7 @@
 //
 //
 // configure GPIO 20 for output
-ldr r0, =0x20200008
+ldr r0, =0x3F200008
 mov r1, #1
 str r1, [r0]
 
@@ -11,7 +11,7 @@ mov r1, #(1<<20)
 loop: 
 
 // set GPIO 20 high
-ldr r0, =0x2020001C
+ldr r0, =0x3F20001C
 str r1, [r0] 
 
 // delay
@@ -21,7 +21,7 @@ subs r2, #1
 bne wait1
 
 // set GPIO 20 low
-ldr r0, =0x20200028
+ldr r0, =0x3F200028
 str r1, [r0] 
 
 // delay
