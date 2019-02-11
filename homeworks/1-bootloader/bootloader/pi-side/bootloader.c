@@ -73,13 +73,10 @@ void static gpio_set_io_off(unsigned pin) {
 	}
 }
 
-
 void notmain(void) {
 
 //	gpio_set_io(20);
 	delay_ms(2000);
-
-	
 	uart_init();
 
 	// XXX: cs107e has this delay; doesn't seem to be required if 
@@ -98,13 +95,12 @@ void notmain(void) {
 	put_uint(fsize);
 	put_uint(crc32_rx);
 	int ufsize = fsize/4;
-	while(ufsize>0)
+	int tmp = 0;
+	while(tmp < ufsize)
 	{
-		(*armbase) = get_uint();
-		armbase++;
-		--ufsize;
+		armbase[tmp] = get_uint();
+		tmp++;
 	}
-
 	unsigned eot = get_uint();
 	if(eot !=EOT)
 		put_uint(BAD_END);
@@ -112,7 +108,7 @@ void notmain(void) {
 		put_uint(EOT);
 	
 //	gpio_set_io_off(20);
-	unsigned check_crc32 = crc32((void*)ARMBASE, fsize/4);
+	unsigned check_crc32 = crc32(ARMBASE, fsize/4);
 	
 	if(check_crc32!=crc32_rx){
 		put_uint(BAD_CKSUM);
@@ -121,7 +117,7 @@ void notmain(void) {
 		put_uint(ACK);
 	}
 
-	delay_ms(2000);
+	delay_ms(1000);
 
 	/* XXX put your bootloader implementation here XXX */
 	// XXX: appears we need these delays or the unix side gets confused.
